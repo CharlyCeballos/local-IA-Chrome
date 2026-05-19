@@ -1,0 +1,15 @@
+{
+  "name": "local-ia",
+  "version": "1.0.0",
+  "description": "Local AI offline project running on Bun",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CharlyCeballos/local-IA-Chrome.git"
+  },
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.js",
+    "dev": "bun --watch server.js"
+  }
+}
