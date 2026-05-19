@@ -1,8 +1,8 @@
 // server.js
 // Native ultra-fast Bun static server for offline local AI project
 
-const DEFAULT_PORT = 8080;
-const PORT = process.env.PORT || DEFAULT_PORT;
+const DEFAULT_PORT = 41112;
+const PORT = DEFAULT_PORT;
 
 console.log(`Iniciando servidor Bun en puerto: ${PORT}`);
 
@@ -34,7 +34,7 @@ Bun.serve({
   error(error) {
     console.error("Error en servidor Bun:", error);
     return new Response("Internal Server Error", { status: 500 });
-  }
+  },
 });
 
 console.log(`Servidor activo. URL local: http://localhost:${PORT}`);
