@@ -78,12 +78,12 @@ curl -fsSL https://bun.sh/install | bash
    (Se reiniciará automáticamente si haces cambios en los archivos).
 
    ```bash
-   bun run dev
+   bun dev
    ```
 
 4. **Ejecutar en modo producción:**
    ```bash
-   bun run start
+   bun start
    ```
 
 ## 🌐 Acceso
