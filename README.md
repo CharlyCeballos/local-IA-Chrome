@@ -91,7 +91,7 @@ curl -fsSL https://bun.sh/install | bash
 Una vez iniciado, abre Chrome y visita:
 
 ```
-http://localhost:3000
+http://localhost:41112
 ```
 
 _(O el puerto que indique la terminal)_.
