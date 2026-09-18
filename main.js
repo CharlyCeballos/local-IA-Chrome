@@ -1,12 +1,22 @@
 const MESSAGES = {
-  WAKING: "Espera, despertando a la IA...",
   READY: "Listo para vibecodear",
+  WAKING: "Espera, despertando a la IA...",
   THINKING: "Pensando...",
+  NEEDS_DOWNLOAD:
+    "Modelo pendiente de descarga (varios GB). Escribe algo y pulsa Enviar para iniciarla.",
   ERROR_INIT: "❌ Error al despertar a la IA.",
   ERROR_PROMPT: "❌ Error al procesar la petición.",
   NOT_AVAILABLE:
-    "❌ LanguageModel no disponible. Usa Chrome 127+ y activa flags.",
-  NOT_READY: "❌ Modelo no listo. Revisa chrome://components.",
+    "❌ LanguageModel no disponible. Usa Chrome 138+ y activa los flags de Gemini Nano.",
+  NOT_READY:
+    "❌ Modelo no disponible en este equipo. Revisa chrome://on-device-internals.",
+};
+
+const MODEL_OPTIONS = {
+  systemPrompt:
+    "Eres un asistente técnico conciso y amigable. Respondes en español (México).",
+  expectedInputs: [{ type: "text", languages: ["es", "en"] }],
+  expectedOutputs: [{ type: "text", languages: ["es"] }],
 };
 
 let session = null;
@@ -20,24 +30,14 @@ async function init() {
     return;
   }
   try {
-    const availability = await LanguageModel.availability();
-    if (availability === "no") {
+    const availability = await LanguageModel.availability(MODEL_OPTIONS);
+    if (availability === "unavailable") {
       outputElement.textContent = MESSAGES.NOT_READY;
       return;
     }
 
-    outputElement.textContent = MESSAGES.WAKING;
-    session = await LanguageModel.create({
-      systemPrompt:
-        "Eres un asistente técnico conciso y amigable. Respondes en español (México).",
-      expectedOutputs: [{ type: "text", languages: ["es", "en"] }],
-    });
-
-    // Initial call to wake up the model
-    await session.prompt("Ping");
-
-    outputElement.textContent = MESSAGES.READY;
-    // Enable controls
+    outputElement.textContent =
+      availability === "available" ? MESSAGES.READY : MESSAGES.NEEDS_DOWNLOAD;
     userInput.disabled = false;
     updateSendButtonState();
     userInput.focus();
@@ -48,32 +48,43 @@ async function init() {
 }
 
 function updateSendButtonState() {
-  if (!session) {
-    sendBtn.disabled = true;
-    return;
-  }
-  sendBtn.disabled = userInput.value.trim() === "";
+  sendBtn.disabled = userInput.disabled || userInput.value.trim() === "";
+}
+
+// Chrome requires a user gesture to start the download, so the session is
+// created on the first send instead of on page load.
+async function ensureSession() {
+  if (session) return session;
+
+  outputElement.textContent = MESSAGES.WAKING;
+  session = await LanguageModel.create({
+    ...MODEL_OPTIONS,
+    monitor(monitor) {
+      monitor.addEventListener("downloadprogress", (event) => {
+        outputElement.textContent = `Descargando modelo: ${Math.round(
+          event.loaded * 100
+        )}%`;
+      });
+    },
+  });
+  return session;
 }
 
 async function handleSend() {
   const text = userInput.value.trim();
+  if (!text) return;
 
-  // Verificar que el texto no esté vacío
-  if (!text || !session) return;
-
-  // Lock UI
   userInput.disabled = true;
   sendBtn.disabled = true;
-  outputElement.textContent = MESSAGES.THINKING;
 
   try {
-    const respuesta = await session.prompt(text);
-    outputElement.textContent = respuesta;
+    const model = await ensureSession();
+    outputElement.textContent = MESSAGES.THINKING;
+    outputElement.textContent = await model.prompt(text);
   } catch (error) {
     console.error("Error en prompt:", error);
     outputElement.textContent = MESSAGES.ERROR_PROMPT;
   } finally {
-    // Unlock UI
     userInput.disabled = false;
     userInput.value = "";
     updateSendButtonState();
@@ -85,15 +96,11 @@ userInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     handleSend();
-  } else if (event.key === "Enter" && event.shiftKey) {
-    // Añadir salto de línea cuando se presiona Shift + Enter
-    userInput.value += "\n";
-    event.preventDefault();
-    updateSendButtonState();
   }
 });
 
 userInput.addEventListener("input", updateSendButtonState);
+sendBtn.addEventListener("click", handleSend);
 
 // Start the process
 init();

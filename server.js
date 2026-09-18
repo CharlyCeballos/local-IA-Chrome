@@ -1,6 +1,7 @@
 // server.js
 // Minimal Node static server for the offline local AI project
 
+import { spawn } from "node:child_process";
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -51,4 +52,11 @@ createServer(async (req, res) => {
     .pipe(res);
 }).listen(PORT, () => {
   console.log(`Servidor activo. URL local: http://localhost:${PORT}`);
+
+  if (!process.argv.includes("--open")) return;
+  spawn(
+    "google-chrome",
+    ["--optimization-guide-performance-class=6", `http://localhost:${PORT}`],
+    { stdio: "ignore", detached: true }
+  ).unref();
 });
