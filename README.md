@@ -1,11 +1,11 @@
 # Local IA
 
-Local AI offline project built to run locally with high performance using Bun. This project provides an offline execution environment for AI web apps, avoiding external dependencies.
+Local AI offline project built to run locally with high performance using Node and pnpm. This project provides an offline execution environment for AI web apps, avoiding external dependencies.
 
 ## 🚀 Características
 
 - **Offline First**: Diseñado para ejecutarse completamente sin conexión.
-- **Alto Rendimiento**: Servidor local impulsado por [Bun](https://bun.sh/).
+- **Alto Rendimiento**: Servidor local sobre [Node.js](https://nodejs.org/), gestionado con [pnpm](https://pnpm.io/).
 - **Despliegue Rápido**: Sin configuración compleja, listo para usar.
 
 ## 📋 Prerrequisitos
@@ -13,24 +13,20 @@ Local AI offline project built to run locally with high performance using Bun. T
 > **⚠️ IMPORTANTE - NAVEGADOR REQUERIDO:**
 > Este proyecto **obligatoriamente** debe ejecutarse y probarse en el navegador **Google Chrome**. Otras alternativas (Firefox, Safari, etc.) no están soportadas por las APIs de IA local.
 
-Además, este proyecto requiere **Bun** instalado en tu sistema. A continuación, las instrucciones según tu sistema operativo.
+Además, este proyecto requiere **Node.js 20+** y **pnpm** instalados en tu sistema. A continuación, las instrucciones según tu sistema operativo.
 
 ### Windows
 
-Actualmente, Bun en Windows requiere **WSL** (Windows Subsystem for Linux) o utilizar la versión experimental nativa.
-
-**Opción A (Recomendado con WSL - Ubuntu/Debian):**
-Abre tu terminal WSL y ejecuta:
-
-```bash
-curl -fsSL https://bun.sh/install | bash
-```
-
-**Opción B (Windows Nativo - Experimental):**
-Abre PowerShell y ejecuta:
+Instala Node.js desde [nodejs.org](https://nodejs.org/) (instalador LTS) y luego habilita pnpm desde PowerShell:
 
 ```powershell
-powershell -c "irm bun.sh/install.ps1 | iex"
+corepack enable pnpm
+```
+
+_(Alternativa sin Corepack)_:
+
+```powershell
+npm install -g pnpm
 ```
 
 ### macOS (Intel / Apple Silicon)
@@ -38,25 +34,19 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 Abre la terminal y ejecuta:
 
 ```bash
-curl -fsSL https://bun.sh/install | bash
-```
-
-_(Alternativa usando Homebrew)_:
-
-```bash
-brew tap oven-sh/bun
-brew install bun
+brew install node
+corepack enable pnpm
 ```
 
 ### Linux (Debian, Ubuntu, Arch, etc.)
 
-Abre tu terminal y ejecuta:
+Instala Node.js con el gestor de paquetes de tu distribución (o con [nvm](https://github.com/nvm-sh/nvm)) y habilita pnpm:
 
 ```bash
-curl -fsSL https://bun.sh/install | bash
+corepack enable pnpm
 ```
 
-> Asegúrate de tener `curl` y `unzip` instalados: `sudo apt install curl unzip` (Debian/Ubuntu).
+> Si `corepack` no está disponible, instala pnpm con: `npm install -g pnpm`.
 
 ## 🛠️ Instalación y Uso
 
@@ -71,19 +61,19 @@ curl -fsSL https://bun.sh/install | bash
    _(Si existieran dependencias en el futuro, ejecuta esto. Actualmente el proyecto es ligero y autónomo)._
 
    ```bash
-   bun install
+   pnpm install
    ```
 
 3. **Ejecutar el servidor en modo desarrollo:**
    (Se reiniciará automáticamente si haces cambios en los archivos).
 
    ```bash
-   bun dev
+   pnpm dev
    ```
 
 4. **Ejecutar en modo producción:**
    ```bash
-   bun start
+   pnpm start
    ```
 
 ## 🌐 Acceso

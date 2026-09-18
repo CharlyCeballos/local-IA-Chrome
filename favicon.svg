@@ -5,9 +5,9 @@
       <stop offset="0%" stop-color="#1e1e2f"/>
       <stop offset="100%" stop-color="#0f0f15"/>
     </linearGradient>
-    <!-- Degradado para la IA / El rayo de Bun -->
-    <linearGradient id="bunLightning" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbf1d3"/> <!-- Color crema/huevo de Bun -->
+    <!-- Degradado para la IA / El rayo -->
+    <linearGradient id="aiLightning" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbf1d3"/> <!-- Color crema -->
       <stop offset="50%" stop-color="#ff9d00"/> <!-- Transición energía -->
       <stop offset="100%" stop-color="#ff4500"/>
     </linearGradient>
@@ -28,8 +28,8 @@
     <circle cx="362" cy="180" r="16" fill="#ff9d00"/>
   </g>
 
-  <!-- El Rayo Central (Rendimiento / Bun) -->
-  <path d="M290 40 L130 270 L240 270 L210 470 L380 230 L270 230 Z" fill="url(#bunLightning)" filter="drop-shadow(0px 4px 20px rgba(255,157,0,0.5))"/>
+  <!-- El Rayo Central (Rendimiento) -->
+  <path d="M290 40 L130 270 L240 270 L210 470 L380 230 L270 230 Z" fill="url(#aiLightning)" filter="drop-shadow(0px 4px 20px rgba(255,157,0,0.5))"/>
   
   <!-- Nodos principales sobre el rayo -->
   <circle cx="210" cy="470" r="10" fill="#fbf1d3"/>

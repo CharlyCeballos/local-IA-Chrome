@@ -1,15 +1,16 @@
 {
   "name": "local-ia",
   "version": "1.0.0",
-  "description": "Local AI offline project running on Bun",
+  "description": "Local AI offline project running on Node with pnpm",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CharlyCeballos/local-IA-Chrome.git"
   },
   "main": "server.js",
   "type": "module",
+  "packageManager": "pnpm@10.0.0",
   "scripts": {
-    "start": "bun run server.js",
-    "dev": "bun --watch server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   }
 }

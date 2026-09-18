@@ -1,40 +1,54 @@
 // server.js
-// Native ultra-fast Bun static server for offline local AI project
+// Minimal Node static server for the offline local AI project
 
-const DEFAULT_PORT = 41112;
-const PORT = DEFAULT_PORT;
+import { createReadStream } from "node:fs";
+import { stat } from "node:fs/promises";
+import { createServer } from "node:http";
+import { extname, resolve, sep } from "node:path";
 
-console.log(`Iniciando servidor Bun en puerto: ${PORT}`);
+const PORT = 41112;
+const ROOT = import.meta.dirname;
 
-Bun.serve({
-  port: PORT,
-  async fetch(req) {
-    const url = new URL(req.url);
-    let filePath = url.pathname;
+const MIME_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".wasm": "application/wasm",
+};
 
-    // Default route
-    if (filePath === "/") {
-      filePath = "/index.html";
-    }
+console.log(`Iniciando servidor Node en puerto: ${PORT}`);
 
-    // Resolve path relative to project root
-    const absolutePath = `.${filePath}`;
-    const file = Bun.file(absolutePath);
+createServer(async (req, res) => {
+  const { pathname } = new URL(req.url, `http://localhost:${PORT}`);
+  const requestedPath = decodeURIComponent(pathname === "/" ? "/index.html" : pathname);
+  const absolutePath = resolve(ROOT, `.${requestedPath}`);
 
-    // Verify file existence safely
-    const exists = await file.exists();
-    if (!exists) {
-      console.warn(`Archivo no encontrado: ${filePath}`);
-      return new Response("Not Found", { status: 404 });
-    }
+  // Keep every served file inside the project root
+  if (!absolutePath.startsWith(ROOT + sep)) {
+    res.writeHead(403).end("Forbidden");
+    return;
+  }
 
-    // Serve file with correct MIME type detected automatically by Bun
-    return new Response(file);
-  },
-  error(error) {
-    console.error("Error en servidor Bun:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  },
+  const stats = await stat(absolutePath).catch(() => null);
+  if (!stats?.isFile()) {
+    console.warn(`Archivo no encontrado: ${requestedPath}`);
+    res.writeHead(404).end("Not Found");
+    return;
+  }
+
+  res.writeHead(200, {
+    "Content-Type": MIME_TYPES[extname(absolutePath)] ?? "application/octet-stream",
+    "Content-Length": stats.size,
+  });
+  createReadStream(absolutePath)
+    .on("error", (error) => {
+      console.error("Error en servidor Node:", error);
+      res.destroy();
+    })
+    .pipe(res);
+}).listen(PORT, () => {
+  console.log(`Servidor activo. URL local: http://localhost:${PORT}`);
 });
-
-console.log(`Servidor activo. URL local: http://localhost:${PORT}`);
